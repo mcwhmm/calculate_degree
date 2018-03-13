@@ -1,9 +1,19 @@
+'''
+	            Sun         Mercury 	Venus	    Mars	    Jupiter	    Saturn  	Uranus  	Neptune	    Pluto	    Moon
+UT+8h	        longitude	longitude	longitude	longitude	longitude	longitude	longitude	longitude	longitude	longitude
+1990年12月19日	266.982004	278.278472	278.617663	58.961709	133.007881	294.207984	278.964489	283.637495	229.188949	288.525750
+'''
+
 import datetime
 from collections import OrderedDict
 import xlrd
 import sys
+import pprint
 
-data = xlrd.open_workbook('geocentric 1990-2035.xls')
+#data = xlrd.open_workbook('geocentric 1990-2035.xls')
+with xlrd.open_workbook('geocentric 1990-2035.xls') as data:
+    pass
+
 PLANET_NUM = 10
 
 
@@ -32,9 +42,9 @@ def generator_dict(data, planet):
                 format_date = date_value.strftime('%Y-%m-%d')   #带时间('%y-%m-%d %I:%M:%S')
                 ordered_dict[format_date] = tup
             else:
-                count = count + 1
+                count += 1
                 continue
-        count = count + 1
+        count += 1
 
     return ordered_dict
 
@@ -67,7 +77,6 @@ def find_input_degree(planet_dict,deviation):
     #把各种不同周期数据放入有序字典，取最接近输入值的数字
     for k, v in planet_dict.items():
         count = count + 1
-        print(count)
         diff = abs(pre_v - v[0])       #当前日期与上个日期度数差值
         if diff < 180 and v[1] == planet_stat:      #确保当度数回到0时能确清空temp字典，重新计算下一个0-360度
             temp[k] = abs(v[0] - degree)        #放到0-360度集合
@@ -99,13 +108,12 @@ if __name__ == "__main__":
     while True:
         val = None
         input_value = input("input \"quit\" to exit \n"
-                            "input planet name:"
-                            ).lower()
+                            "input planet name:").lower()
         if input_value in deviation.keys():
             init_dict = generator_dict(data, deviation[input_value])
             result_dict = find_input_degree(init_dict,deviation[input_value])
             print("result %s degree is:" % input_value)
-            print(result_dict)
+            pprint.pprint(result_dict)
         elif input_value == "quit":
             sys.exit()
         else:
